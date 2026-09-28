@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porto Camarões — Restaurante de Frutos do Mar · Balneário Camboriú</title>
+<meta name="description" content="Sabor que encanta, onde você estiver. Frutos do mar premium de frente para o mar em Balneário Camboriú. Peça pelo site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+:root{
+  --ink:#0a0e14; --ink2:#0d131c; --ink3:#111a26;
+  --gold:#d4a94e; --gold2:#e8c880; --gold-soft:rgba(212,169,78,.14);
+  --cream:#f5efe3; --muted:#8b94a3; --line:rgba(212,169,78,.22);
+  --red:#8a1e1e;
+  --ff-serif:'Cormorant Garamond',serif; --ff-disp:'Italiana',serif; --ff-script:'Pinyon Script',cursive; --ff-body:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--cream);font-family:var(--ff-body);overflow-x:hidden;cursor:none}
+::selection{background:var(--gold);color:var(--ink)}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:none;border:none;background:none;color:inherit}
+
+/* ---------- cursor ---------- */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:6px;height:6px;background:var(--gold)}
+.cursor-ring{width:36px;height:36px;border:1px solid rgba(212,169,78,.55);transition:width .25s,height .25s,background .25s,border-color .25s}
+.cursor-ring.grow{width:64px;height:64px;background:rgba(212,169,78,.08);border-color:var(--gold)}
+@media (hover:none){body{cursor:auto}.cursor-dot,.cursor-ring{display:none}}
+
+/* ---------- preloader ---------- */
+#preloader{position:fixed;inset:0;background:var(--ink);z-index:5000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#preloader .pl-logo{font-family:var(--ff-script);font-size:clamp(3rem,8vw,5.5rem);color:var(--gold);opacity:0}
+#preloader .pl-bar{width:220px;height:1px;background:rgba(255,255,255,.12);position:relative;overflow:hidden}
+#preloader .pl-bar i{position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left}
+#preloader .pl-pct{font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:20px clamp(20px,5vw,64px);transition:background .4s,padding .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(10,14,20,.82);backdrop-filter:blur(18px);padding:12px clamp(20px,5vw,64px);border-color:rgba(255,255,255,.06)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .b1{font-family:var(--ff-disp);font-size:1.5rem;letter-spacing:.14em;color:var(--cream)}
+.brand .b2{font-family:var(--ff-script);font-size:1.5rem;color:var(--gold)}
+.nav-links{display:flex;gap:34px;align-items:center}
+.nav-links a{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);position:relative;transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--gold);transition:width .35s}
+.nav-links a:hover{color:var(--cream)} .nav-links a:hover::after{width:100%}
+.nav-cta{display:flex;gap:14px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;transition:transform .3s,box-shadow .3s,background .3s,color .3s;position:relative;overflow:hidden}
+.btn-gold{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1206}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,169,78,.35)}
+.btn-ghost{border:1px solid var(--line);color:var(--cream)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.burger{display:none;flex-direction:column;gap:5px;padding:8px}
+.burger span{width:26px;height:1.5px;background:var(--cream);transition:.3s}
+@media(max-width:960px){
+  .nav-links,.nav-cta .btn-ghost{display:none}
+  .burger{display:flex}
+  .nav-links.open{position:fixed;inset:0;background:rgba(10,14,20,.97);backdrop-filter:blur(20px);flex-direction:column;justify-content:center;gap:40px}
+  .nav-links.open a{font-size:1.4rem;color:var(--cream)}
+}
+
+/* ---------- hero ---------- */
+header{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:-8% 0;background:url("assets/images/hero-camarao.jpg") center/cover no-repeat;will-change:transform}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(10,14,20,.96) 25%,rgba(10,14,20,.72) 55%,rgba(10,14,20,.45) 100%),radial-gradient(ellipse at 70% 80%,transparent 0%,rgba(10,14,20,.6) 90%)}
+.hero-inner{position:relative;z-index:2;padding:0 clamp(20px,6vw,90px);max-width:1200px}
+.hero-eyebrow{display:flex;align-items:center;gap:16px;font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:28px}
+.hero-eyebrow::before{content:"";width:52px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--ff-disp);font-size:clamp(3rem,9vw,7.5rem);line-height:.98;letter-spacing:.01em}
+.hero-title em{font-family:var(--ff-script);font-style:normal;color:var(--gold);font-size:1.12em;display:block;margin-top:6px}
+.hero-sub{margin-top:30px;max-width:520px;color:var(--muted);font-weight:300;font-size:1.02rem;line-height:1.8}
+.hero-ctas{margin-top:44px;display:flex;gap:16px;flex-wrap:wrap}
+.hero-badge{position:absolute;right:clamp(20px,6vw,80px);bottom:120px;z-index:3;width:128px;height:128px;display:flex;align-items:center;justify-content:center}
+.hero-badge svg{position:absolute;inset:0;animation:spin 16s linear infinite}
+.hero-badge .hb-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.hero-badge .hb-txt b{font-size:1.5rem;font-family:var(--ff-disp);color:var(--cream)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:720px){.hero-badge{display:none}}
+.scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:.62rem;letter-spacing:.34em;text-transform:uppercase}
+.scroll-hint i{width:1px;height:44px;background:linear-gradient(var(--gold),transparent);display:block;animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- marquee ---------- */
+.marquee{border-block:1px solid rgba(255,255,255,.07);padding:20px 0;overflow:hidden;background:var(--ink2)}
+.marquee-track{display:flex;gap:56px;width:max-content;animation:mar 30s linear infinite;white-space:nowrap}
+.marquee-track span{font-family:var(--ff-disp);font-size:1.15rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(245,239,227,.5);display:flex;align-items:center;gap:56px}
+.marquee-track span::after{content:"✦";color:var(--gold);font-size:.8em}
+@keyframes mar{to{transform:translateX(-50%)}}
+
+/* ---------- sections base ---------- */
+section{position:relative;padding:clamp(80px,10vw,140px) clamp(20px,6vw,90px)}
+.sec-label{display:flex;align-items:center;gap:16px;font-size:.7rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+.sec-label::before{content:"";width:44px;height:1px;background:var(--gold)}
+.sec-title{font-family:var(--ff-disp);font-size:clamp(2.2rem,5vw,4rem);line-height:1.05}
+.sec-title em{font-family:var(--ff-script);font-style:normal;color:var(--gold)}
+.reveal{opacity:0;transform:translateY(48px)}
+
+/* ---------- about ---------- */
+.about-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(36px,6vw,90px);align-items:center;max-width:1300px;margin:0 auto}
+.about-imgs{position:relative}
+.about-imgs .ai-1{width:78%;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.about-imgs .ai-2{position:absolute;right:0;bottom:-64px;width:52%;border-radius:14px;border:6px solid var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.about-imgs .ai-chip{position:absolute;top:-26px;right:8%;background:var(--gold);color:#1a1206;border-radius:999px;padding:12px 22px;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;transform:rotate(-4deg);box-shadow:0 14px 40px rgba(212,169,78,.4)}
+.about-txt p{color:var(--muted);line-height:1.9;font-weight:300;margin-top:22px;max-width:540px}
+.about-list{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:540px}
+.about-list div{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;transition:border-color .3s,background .3s}
+.about-list div:hover{border-color:var(--line);background:var(--gold-soft)}
+.about-list b{display:block;font-family:var(--ff-disp);font-size:1.15rem;color:var(--gold2);margin-bottom:4px}
+.about-list span{font-size:.8rem;color:var(--muted)}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}.about-imgs{margin-bottom:80px}}
+
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.07);max-width:1300px;margin:0 auto;border-radius:16px;overflow:hidden}
+.stats>div{background:var(--ink2);padding:44px 20px;text-align:center}
+.stats .num{font-family:var(--ff-disp);font-size:clamp(2rem,4vw,3.2rem);color:var(--gold)}
+.stats .num sup{font-size:.45em;color:var(--gold2)}
+.stats .lbl{font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- signatures ---------- */
+.sig-wrap{max-width:1300px;margin:0 auto}
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+.sig-card{position:relative;border-radius:18px;overflow:hidden;background:var(--ink3);border:1px solid rgba(255,255,255,.06);transition:transform .5s cubic-bezier(.2,.8,.2,1),border-color .4s,box-shadow .5s}
+.sig-card:hover{transform:translateY(-10px);border-color:var(--line);box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.sig-card .sc-img{height:250px;overflow:hidden}
+.sig-card .sc-img img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}
+.sig-card:hover .sc-img img{transform:scale(1.09)}
+.sig-card .sc-body{padding:26px 26px 30px}
+.sig-card .sc-tag{display:inline-block;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:6px 14px;margin-bottom:14px}
+.sig-card h3{font-family:var(--ff-disp);font-size:1.5rem;margin-bottom:8px}
+.sig-card p{font-size:.86rem;color:var(--muted);line-height:1.75;font-weight:300;min-height:64px}
+.sig-card .sc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.sig-card .price{font-family:var(--ff-disp);font-size:1.5rem;color:var(--gold2)}
+.add-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;background:rgba(212,169,78,.1);border:1px solid var(--line);color:var(--gold);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;transition:.3s}
+.add-btn:hover{background:var(--gold);color:#1a1206}
+@media(max-width:960px){.sig-grid{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
+
+/* ---------- menu ---------- */
+#cardapio{background:radial-gradient(1200px 500px at 50% 0%,rgba(212,169,78,.06),transparent 70%)}
+.menu-head{max-width:1300px;margin:0 auto;text-align:center}
+.menu-head .sec-label{justify-content:center}.menu-head .sec-label::after{content:"";width:44px;height:1px;background:var(--gold)}
+.menu-tools{max-width:1300px;margin:48px auto 0;display:flex;flex-direction:column;gap:22px;align-items:center}
+.search-box{position:relative;width:min(480px,100%)}
+.search-box input{width:100%;background:var(--ink3);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:15px 24px 15px 52px;color:var(--cream);font-family:var(--ff-body);font-size:.92rem;outline:none;transition:border-color .3s}
+.search-box input:focus{border-color:var(--gold)}
+.search-box svg{position:absolute;left:20px;top:50%;transform:translateY(-50%);opacity:.5}
+.cats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.cat-pill{padding:11px 22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);transition:.3s}
+.cat-pill:hover{color:var(--cream);border-color:var(--line)}
+.cat-pill.active{background:var(--gold);border-color:var(--gold);color:#1a1206;font-weight:700}
+.menu-grid{max-width:1300px;margin:44px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dish{display:flex;justify-content:space-between;gap:20px;padding:24px 26px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);transition:background .35s,border-color .35s,transform .35s;opacity:0;transform:translateY(24px)}
+.dish.in{opacity:1;transform:none}
+.dish:hover{background:rgba(212,169,78,.06);border-color:var(--line);transform:translateY(-3px)}
+.dish .d-main{min-width:0}
+.dish .d-name{display:flex;align-items:center;gap:10px;font-family:var(--ff-disp);font-size:1.28rem;color:var(--cream)}
+.dish .d-badge{font-family:var(--ff-body);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;background:var(--red);color:#ffd9d9;padding:4px 10px;border-radius:999px;font-weight:700}
+.dish .d-badge.new{background:#1d5c38;color:#b9f0cd}
+.dish .d-desc{margin-top:8px;font-size:.82rem;color:var(--muted);line-height:1.7;font-weight:300}
+.dish .d-side{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:12px;flex-shrink:0}
+.dish .d-price{font-family:var(--ff-disp);font-size:1.45rem;color:var(--gold2);white-space:nowrap}
+.qty{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.qty button{width:32px;height:32px;font-size:1rem;color:var(--gold);transition:.25s}
+.qty button:hover{background:var(--gold);color:#1a1206}
+.qty .qv{min-width:28px;text-align:center;font-size:.85rem;font-weight:600}
+.dish .add-mini{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--line);padding-bottom:2px;transition:.25s}
+.dish .add-mini:hover{color:var(--gold2);border-color:var(--gold)}
+.menu-note{max-width:1300px;margin:34px auto 0;text-align:center;font-size:.78rem;color:var(--muted);line-height:2}
+.menu-note b{color:var(--gold2);font-weight:600}
+@media(max-width:900px){.menu-grid{grid-template-columns:1fr}}
+
+/* ---------- steps ---------- */
+.steps-grid{max-width:1300px;margin:56px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.step{position:relative;padding:38px 30px;border-radius:18px;background:var(--ink2);border:1px solid rgba(255,255,255,.06);overflow:hidden;transition:transform .4s,border-color .4s}
+.step:hover{transform:translateY(-8px);border-color:var(--line)}
+.step .st-num{font-family:var(--ff-disp);font-size:4.4rem;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(212,169,78,.5);margin-bottom:20px}
+.step h3{font-family:var(--ff-disp);font-size:1.5rem;margin-bottom:10px}
+.step p{font-size:.86rem;color:var(--muted);line-height:1.8;font-weight:300}
+.step::after{content:"";position:absolute;right:-40px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(212,169,78,.14),transparent 70%)}
+@media(max-width:860px){.steps-grid{grid-template-columns:1fr}}
+
+/* ---------- reviews ---------- */
+#avaliacoes{background:var(--ink2)}
+.rev-shell{max-width:1300px;margin:0 auto}
+.rev-grid{display:grid;grid-template-columns:.9fr 1.4fr;gap:clamp(30px,5vw,70px);align-items:center;margin-top:50px}
+.rev-score{text-align:center;padding:50px 30px;border-radius:20px;background:linear-gradient(160deg,var(--ink3),var(--ink));border:1px solid var(--line)}
+.rev-score .big{font-family:var(--ff-disp);font-size:6rem;line-height:1;color:var(--gold)}
+.stars{display:flex;justify-content:center;gap:5px;margin:16px 0 10px}
+.stars svg{width:20px;height:20px;fill:var(--gold)}
+.stars svg.dim{fill:rgba(212,169,78,.3)}
+.rev-score p{color:var(--muted);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase}
+.rev-cards{display:grid;gap:16px}
+.rev-card{background:var(--ink3);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px 28px;transition:border-color .3s}
+.rev-card:hover{border-color:var(--line)}
+.rev-card .rc-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.rev-card .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--red));display:flex;align-items:center;justify-content:center;font-family:var(--ff-disp);font-size:1.2rem;color:#fff}
+.rev-card b{font-size:.92rem;display:block}
+.rev-card small{color:var(--muted);font-size:.72rem}
+.rev-card p{font-size:.88rem;color:#c8c2b4;line-height:1.75;font-weight:300}
+@media(max-width:900px){.rev-grid{grid-template-columns:1fr}}
+
+/* ---------- location ---------- */
+.loc-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,70px);align-items:stretch}
+.loc-info{display:flex;flex-direction:column;justify-content:center;gap:26px}
+.loc-row{display:flex;gap:18px;align-items:flex-start}
+.loc-ico{width:46px;height:46px;flex-shrink:0;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.loc-row b{display:block;font-family:var(--ff-disp);font-size:1.15rem;margin-bottom:4px}
+.loc-row span,.loc-row a{font-size:.86rem;color:var(--muted);line-height:1.7;font-weight:300}
+.loc-row a:hover{color:var(--gold2)}
+.hours{display:flex;gap:26px;flex-wrap:wrap;margin-top:6px}
+.hours div b{font-family:var(--ff-disp);font-size:1.6rem;color:var(--gold2);display:block}
+.hours div span{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.loc-photo{position:relative;border-radius:20px;overflow:hidden;min-height:420px}
+.loc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.loc-photo .lp-cap{position:absolute;left:24px;bottom:24px;background:rgba(10,14,20,.8);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:16px 22px}
+.loc-photo .lp-cap b{font-family:var(--ff-disp);font-size:1.1rem;color:var(--gold2);display:block}
+.loc-photo .lp-cap span{font-size:.76rem;color:var(--muted)}
+@media(max-width:900px){.loc-grid{grid-template-columns:1fr}}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid rgba(255,255,255,.07);padding:70px clamp(20px,6vw,90px) 34px;background:var(--ink2)}
+.foot-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:44px}
+.foot-grid h4{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.foot-grid a,.foot-grid p{display:block;font-size:.86rem;color:var(--muted);margin-bottom:12px;font-weight:300;line-height:1.7}
+.foot-grid a:hover{color:var(--gold2)}
+.foot-brand{font-family:var(--ff-script);font-size:2.4rem;color:var(--gold)}
+.foot-bottom{max-width:1300px;margin:56px auto 0;padding-top:26px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.72rem;color:var(--muted);letter-spacing:.1em}
+@media(max-width:820px){.foot-grid{grid-template-columns:1fr}}
+
+/* ---------- floating cart ---------- */
+#cartFab{position:fixed;right:26px;bottom:26px;z-index:950;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(212,169,78,.45);transition:transform .3s}
+#cartFab:hover{transform:scale(1.08)}
+#cartFab .count{position:absolute;top:-4px;right:-4px;min-width:24px;height:24px;border-radius:999px;background:var(--red);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;border:2px solid var(--ink)}
+
+/* ---------- cart drawer ---------- */
+#drawerOverlay{position:fixed;inset:0;background:rgba(4,6,10,.7);backdrop-filter:blur(6px);z-index:960;opacity:0;pointer-events:none;transition:opacity .35s}
+#drawerOverlay.open{opacity:1;pointer-events:auto}
+#cartDrawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,92vw);background:var(--ink2);border-left:1px solid rgba(255,255,255,.08);z-index:970;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+#cartDrawer.open{transform:none}
+.cd-head{padding:26px 28px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center}
+.cd-head h3{font-family:var(--ff-disp);font-size:1.6rem}
+.cd-head button{color:var(--muted);font-size:1.6rem;line-height:1;transition:color .3s}
+.cd-head button:hover{color:var(--gold)}
+.cd-mode{display:flex;gap:10px;padding:20px 28px 0}
+.mode-btn{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.3s}
+.mode-btn.active{background:var(--gold);color:#1a1206;border-color:var(--gold);font-weight:700}
+.cd-items{flex:1;overflow-y:auto;padding:22px 28px;display:flex;flex-direction:column;gap:14px}
+.cd-empty{text-align:center;color:var(--muted);font-size:.86rem;padding:60px 0;line-height:2}
+.cd-item{display:flex;gap:14px;align-items:center;background:var(--ink3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 16px}
+.cd-item .ci-info{flex:1;min-width:0}
+.cd-item .ci-info b{display:block;font-family:var(--ff-disp);font-size:1.02rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-item .ci-info span{font-size:.76rem;color:var(--gold2)}
+.ci-qty{display:flex;align-items:center;gap:10px}
+.ci-qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);color:var(--gold);font-size:.95rem;transition:.25s}
+.ci-qty button:hover{background:var(--gold);color:#1a1206}
+.ci-qty .qv{font-weight:600;min-width:16px;text-align:center}
+.ci-del{color:var(--muted);font-size:1.1rem;transition:.25s}
+.ci-del:hover{color:#e06a6a}
+.cd-foot{border-top:1px solid rgba(255,255,255,.07);padding:22px 28px 28px}
+.cd-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.cd-total span{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.cd-total b{font-family:var(--ff-disp);font-size:2rem;color:var(--gold2)}
+.cd-send{width:100%;justify-content:center}
+.cd-note{margin-top:12px;text-align:center;font-size:.72rem;color:var(--muted)}
+
+/* ---------- checkout modal ---------- */
+#ckModal{position:fixed;inset:0;z-index:980;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .35s}
+#ckModal.open{opacity:1;pointer-events:auto}
+#ckModal .ck-bg{position:absolute;inset:0;background:rgba(4,6,10,.8);backdrop-filter:blur(8px)}
+.ck-card{position:relative;width:min(520px,100%);background:var(--ink2);border:1px solid var(--line);border-radius:20px;padding:36px;max-height:90vh;overflow-y:auto;transform:translateY(30px);transition:transform .4s}
+#ckModal.open .ck-card{transform:none}
+.ck-card h3{font-family:var(--ff-disp);font-size:1.9rem;margin-bottom:6px}
+.ck-card>p{font-size:.84rem;color:var(--muted);margin-bottom:24px}
+.ck-field{margin-bottom:16px}
+.ck-field label{display:block;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.ck-field input,.ck-field textarea{width:100%;background:var(--ink3);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 16px;color:var(--cream);font-family:var(--ff-body);font-size:.9rem;outline:none;transition:border-color .3s;resize:vertical}
+.ck-field input:focus,.ck-field textarea:focus{border-color:var(--gold)}
+.ck-close{position:absolute;top:18px;right:20px;font-size:1.6rem;color:var(--muted)}
+.ck-close:hover{color:var(--gold)}
+.ck-summary{background:var(--ink3);border-radius:12px;padding:16px 18px;margin:20px 0;font-size:.82rem;color:var(--muted);line-height:1.9;max-height:160px;overflow-y:auto}
+.ck-summary b{color:var(--cream)}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,120px);background:var(--gold);color:#1a1206;font-weight:600;font-size:.84rem;padding:14px 28px;border-radius:999px;z-index:1000;transition:transform .45s cubic-bezier(.2,.8,.2,1);box-shadow:0 16px 44px rgba(212,169,78,.4);white-space:nowrap}
+#toast.show{transform:translate(-50%,0)}
+
+/* wave divider */
+.wave{display:block;width:100%;height:70px;margin-bottom:-1px}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div><div class="cursor-ring"></div>
+
+<div id="preloader">
+  <div class="pl-logo">Porto Camarões</div>
+  <div class="pl-bar"><i></i></div>
+  <div class="pl-pct">0%</div>
+</div>
+
+<nav id="nav">
+  <a href="#" class="brand"><span class="b1">PORTO</span><span class="b2">Camarões</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="#sobre">O Restaurante</a>
+    <a href="#assinaturas">Assinaturas</a>
+    <a href="#cardapio">Cardápio</a>
+    <a href="#como-pedir">Delivery</a>
+    <a href="#avaliacoes">Avaliações</a>
+    <a href="#contato">Contato</a>
+  </div>
+  <div class="nav-cta">
+    <a class="btn btn-ghost" href="tel:+554732640399">(47) 3264-0399</a>
+    <button class="btn btn-gold" onclick="openCart()">Meu pedido</button>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow reveal">Balneário Camboriú · Beira-mar</div>
+    <h1 class="hero-title reveal">O sabor do mar,<br><em>à beira do mar</em></h1>
+    <p class="hero-sub reveal">Camarões, peixes e frutos do mar preparados na hora, com aquele tempero que só o litoral de Santa Catarina tem. De frente para o Atlântico, há anos encantando paladares.</p>
+    <div class="hero-ctas reveal">
+      <a href="#cardapio" class="btn btn-gold">Ver cardápio</a>
+      <button class="btn btn-ghost" onclick="openCart()">Pedir agora</button>
+    </div>
+  </div>
+  <div class="hero-badge reveal">
+    <svg viewBox="0 0 100 100"><defs><path id="circ" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs><text fill="#d4a94e" font-size="8.2" letter-spacing="2.5"><textPath href="#circ">DESDE O MAR · PARA A SUA MESA ·</textPath></text></svg>
+    <div class="hb-txt"><b>4.5</b>no Google</div>
+  </div>
+  <div class="scroll-hint"><span>Role</span><i></i></div>
+</header>
+
+<div class="marquee"><div class="marquee-track" id="marqueeTrack">
+  <span>Camarão à Moda da Casa</span><span>Peixe Grelhado</span><span>Moqueca</span><span>Petit Gateau</span><span>Caipirinha de Kiwi</span><span>Sequência de Camarões</span><span>Tainha Grelhada</span><span>Aperol Spritz</span>
+</div></div>
+
+<section id="sobre">
+  <div class="about-grid">
+    <div class="about-imgs reveal">
+      <img class="ai-1" src="assets/images/terrazzo.jpg" alt="Terraço do restaurante de frente para o mar">
+      <img class="ai-2" src="assets/images/terrazzo-noite.jpg" alt="Ambiente à noite">
+      <div class="ai-chip">Terraço beira-mar</div>
+    </div>
+    <div class="about-txt">
+      <div class="sec-label reveal">O restaurante</div>
+      <h2 class="sec-title reveal">Tradição que se sente<br><em>no primeiro garfo</em></h2>
+      <p class="reveal">Sobre a Avenida Atlântica, com o mar como cenário, o Porto Camarões une frescor, técnica e hospitalidade. Cada prato nasce do pescado do dia, recebido, selecionado e preparado com o respeito que a culinha caiçara merece.</p>
+      <div class="about-list">
+        <div class="reveal"><b>Pescado do dia</b><span>Seleção diária de peixes e camarões frescos</span></div>
+        <div class="reveal"><b>Ambiente casual</b><span>Sofisticado sem perder aconchego, com mesas ao ar livre</span></div>
+        <div class="reveal"><b>Vinhos & coquetéis</b><span>Carta premiada e clássicos da casa</span></div>
+        <div class="reveal"><b>Família & acessível</b><span>Espaço kids, cadeiras infantis e acessibilidade total</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="stats">
+    <div class="reveal"><div class="num"><span data-count="4.5" data-dec="1">0</span><sup>★</sup></div><div class="lbl">Nota no Google</div></div>
+    <div class="reveal"><div class="num"><span data-count="3086">0</span><sup>+</sup></div><div class="lbl">Avaliações</div></div>
+    <div class="reveal"><div class="num"><span data-count="120">0</span><sup>+</sup></div><div class="lbl">Itens no cardápio</div></div>
+    <div class="reveal"><div class="num"><span data-count="10">0</span><sup>%</sup></div><div class="lbl">Taxa de serviço opcional</div></div>
+  </div>
+</section>
+
+<section id="assinaturas">
+  <div class="sig-wrap">
+    <div class="sec-label reveal">Pratos assinatura</div>
+    <h2 class="sec-title reveal">Os queridinhos <em>da casa</em></h2>
+    <div class="sig-grid">
+      <article class="sig-card reveal">
+        <div class="sc-img"><img src="assets/images/hero-camarao.jpg" alt="Camarão moda da casa"></div>
+        <div class="sc-body">
+          <span class="sc-tag">Mais pedido</span>
+          <h3>Camarão à Moda da Casa</h3>
+          <p>8 camarões à milanesa, 2 filés de linguado à milanesa, arroz branco, à grega, batata frita, banana à milanesa, molho de camarão e pirão.</p>
+          <div class="sc-foot"><span class="price">R$ 372,90</span><button class="add-btn" data-add="moda-casa">Adicionar +</button></div>
+        </div>
+      </article>
+      <article class="sig-card reveal">
+        <div class="sc-img"><img src="assets/images/moqueca.jpg" alt="Sequência de camarão"></div>
+        <div class="sc-body">
+          <span class="sc-tag">Para dividir</span>
+          <h3>Sequência de Camarão</h3>
+          <p>Bolinhos, camarão soltinho, alho e óleo, ao bafo, espetinhos à grega e grelhados e filés de linguado à milanesa. Arrebatador.</p>
+          <div class="sc-foot"><span class="price">R$ 404,90</span><button class="add-btn" data-add="sequencia">Adicionar +</button></div>
+        </div>
+      </article>
+      <article class="sig-card reveal">
+        <div class="sc-img"><img src="assets/images/peixe-grelhado.jpg" alt="Moqueca de peixe com camarão"></div>
+        <div class="sc-body">
+          <span class="sc-tag">Clássico</span>
+          <h3>Moqueca de Peixe c/ Camarão</h3>
+          <p>Peixe e camarão ensopados no leite de coco e azeite de dendê, com arroz branco, arroz alho e óleo, pirão sauté e farofa.</p>
+          <div class="sc-foot"><span class="price">R$ 311,50</span><button class="add-btn" data-add="moqueca">Adicionar +</button></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="cardapio">
+  <div class="menu-head">
+    <div class="sec-label reveal">Cardápio digital</div>
+    <h2 class="sec-title reveal">Escolha, adicione <em>e peça pelo WhatsApp</em></h2>
+  </div>
+  <div class="menu-tools reveal">
+    <div class="search-box">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f5efe3" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar no cardápio... ex: camarão, moqueca, caipirinha">
+    </div>
+    <div class="cats" id="cats"></div>
+  </div>
+  <div class="menu-grid" id="menuGrid"></div>
+  <div class="menu-note reveal">
+    <b>*</b> Os pratos servem 02 pessoas — meia porção 70% do valor &nbsp;·&nbsp; <b>**</b> Não aceitamos cancelamento após feito o pedido<br>
+    <b>***</b> Não aceitamos cheques &nbsp;·&nbsp; <b>****</b> Taxa de serviço 10% (opcional)
+  </div>
+</section>
+
+<section id="como-pedir">
+  <div class="menu-head">
+    <div class="sec-label reveal">Delivery & retirada</div>
+    <h2 class="sec-title reveal">Receba sem sair <em>de casa</em></h2>
+  </div>
+  <div class="steps-grid">
+    <div class="step reveal"><div class="st-num">01</div><h3>Monte seu pedido</h3><p>Navegue pelo cardápio digital, ajuste as quantidades e veja o total em tempo real. Delivery pela sua região ou retirada no balcão.</p></div>
+    <div class="step reveal"><div class="st-num">02</div><h3>Envie pelo WhatsApp</h3><p>Com um toque, seu pedido chega direto na cozinha com nome, modo de entrega e observações. Simples, rápido e sem erro.</p></div>
+    <div class="step reveal"><div class="st-num">03</div><h3>Saboreie de onde estiver</h3><p>Sabor que encanta, onde você estiver. Acompanhe pelo iFood ou retire na Av. Atlântica, 3410.</p></div>
+  </div>
+</section>
+
+<section id="avaliacoes">
+  <div class="rev-shell">
+    <div class="sec-label reveal">Quem vem, volta</div>
+    <h2 class="sec-title reveal">Palavra de quem <em>provou</em></h2>
+    <div class="rev-grid">
+      <div class="rev-score reveal">
+        <div class="big">4.5</div>
+        <div class="stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7-6.2-3.6L5.8 21l1.4-7L2 9.4l7-.8z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7-6.2-3.6L5.8 21l1.4-7L2 9.4l7-.8z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7-6.2-3.6L5.8 21l1.4-7L2 9.4l7-.8z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7-6.2-3.6L5.8 21l1.4-7L2 9.4l7-.8z"/></svg>
+          <svg class="dim" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7-6.2-3.6L5.8 21l1.4-7L2 9.4l7-.8z"/></svg>
+        </div>
+        <p>3.086 avaliações no Google</p>
+      </div>
+      <div class="rev-cards">
+        <div class="rev-card reveal">
+          <div class="rc-head"><div class="avatar">V</div><div><b>Vanderli Novaes de Freitas</b><small>Local Guide · 2 meses atrás</small></div></div>
+          <p>"Comida deliciosa, ambiente muito agradável e serviço nota 10. Excelente para quem espera um belo almoço à beira da praia. Recomendo!"</p>
+        </div>
+        <div class="rev-card reveal">
+          <div class="rc-head"><div class="avatar">T</div><div><b>Tidisse</b><small>Local Guide · 531 avaliações</small></div></div>
+          <p>"Local aconchegante, atendimento responsável, atencioso e eficaz. Os bolinhos de entrada são imperdíveis."</p>
+        </div>
+        <div class="rev-card reveal">
+          <div class="rc-head"><div class="avatar">G</div><div><b>Comunidade Google</b><small>Resumo de avaliações</small></div></div>
+          <p>"Camarões frescos e peixes excelentes, ambiente limpo e confortável, equipe simpática e serviço impecável."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contato">
+  <div class="loc-grid">
+    <div class="loc-info">
+      <div>
+        <div class="sec-label reveal">Visite-nos</div>
+        <h2 class="sec-title reveal">De frente <em>para o Atlântico</em></h2>
+      </div>
+      <div class="loc-row reveal">
+        <div class="loc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><b>Endereço</b><span>Av. Atlântica, 3410 - Centro<br>Balneário Camboriú - SC, 88330-000</span></div>
+      </div>
+      <div class="loc-row reveal">
+        <div class="loc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c1 .3 1.9.5 2.9.7a2 2 0 0 1 1.6 2Z"/></svg></div>
+        <div><b>Reservas & pedidos</b><a href="tel:+554732640399">(47) 3264-0399</a> · <a href="tel:+554733116181">(47) 3311-6181</a></div>
+      </div>
+      <div class="hours reveal">
+        <div><b>11h30</b><span>Abertura</span></div>
+        <div><b>00h00</b><span>Fechamento</span></div>
+        <div><b>Todos</b><span>Os dias</span></div>
+      </div>
+      <div class="reveal" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px">
+        <a class="btn btn-gold" href="https://wa.me/554732640399?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20uma%20reserva%20no%20Porto%20Camar%C3%B5es." target="_blank" rel="noopener">Reservar mesa</a>
+        <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=Porto+Camar%C3%B5es+Av.+Atl%C3%A2ntica+3410+Balne%C3%A1rio+Cambori%C3%BA" target="_blank" rel="noopener">Como chegar</a>
+      </div>
+    </div>
+    <div class="loc-photo reveal">
+      <img src="assets/images/caipirinha.jpg" alt="Drinks da casa">
+      <div class="lp-cap"><b>Happy hour beira-mar</b><span>Caipirinhas, coquetéis e chopp gelado</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand">Porto Camarões</div>
+      <p>Sabor que encanta, onde você estiver. Frutos do mar premium no coração de Balneário Camboriú.</p>
+    </div>
+    <div>
+      <h4>Navegação</h4>
+      <a href="#sobre">O restaurante</a><a href="#cardapio">Cardápio</a><a href="#como-pedir">Delivery</a><a href="#contato">Reservas</a>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <p>Av. Atlântica, 3410 - Centro<br>Balneário Camboriú - SC</p>
+      <a href="tel:+554732640399">(47) 3264-0399</a>
+      <a href="https://linktr.ee" target="_blank" rel="noopener">Redes sociais</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Porto Camarões Restaurante</span>
+    <span>Feito com carinho à beira-mar 🌊</span>
+  </div>
+</footer>
+
+<button id="cartFab" onclick="openCart()" aria-label="Ver pedido">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1206" stroke-width="2" stroke-linecap="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+  <span class="count" id="cartCount" style="display:none">0</span>
+</button>
+
+<div id="drawerOverlay" onclick="closeCart()"></div>
+<aside id="cartDrawer" aria-label="Seu pedido">
+  <div class="cd-head">
+    <h3>Seu pedido</h3>
+    <button onclick="closeCart()" aria-label="Fechar">✕</button>
+  </div>
+  <div class="cd-mode">
+    <button class="mode-btn active" data-mode="Entrega">🛵 Entrega</button>
+    <button class="mode-btn" data-mode="Retirada">🛍️ Retirada</button>
+  </div>
+  <div class="cd-items" id="cartItems"></div>
+  <div class="cd-foot">
+    <div class="cd-total"><span>Total</span><b id="cartTotal">R$ 0,00</b></div>
+    <button class="btn btn-gold cd-send" id="ckOpenBtn" onclick="openCheckout()">Finalizar pedido →</button>
+    <div class="cd-note">O pedido é enviado direto no nosso WhatsApp</div>
+  </div>
+</aside>
+
+<div id="ckModal">
+  <div class="ck-bg" onclick="closeCheckout()"></div>
+  <div class="ck-card">
+    <button class="ck-close" onclick="closeCheckout()">✕</button>
+    <h3>Quase lá 🦐</h3>
+    <p>Confira seu pedido e envie direto para a nossa cozinha.</p>
+    <div class="ck-field"><label>Seu nome</label><input type="text" id="ckName" placeholder="Como devemos te chamar?"></div>
+    <div class="ck-field"><label>Endereço / referência</label><input type="text" id="ckAddr" placeholder="Rua, número, complemento..."></div>
+    <div class="ck-field"><label>Observações</label><textarea id="ckObs" rows="2" placeholder="Ex.: sem cebola, ponto do peixe..."></textarea></div>
+    <div class="ck-summary" id="ckSummary"></div>
+    <button class="btn btn-gold cd-send" onclick="sendWhats()">Enviar pedido pelo WhatsApp</button>
+  </div>
+</div>
+
+<div id="toast">Adicionado ao pedido ✓</div>
+
+<script>
+/* ================= DADOS DO CARDÁPIO ================= */
+const MENU = [
+ {id:"cam-romana",cat:"Camarões",name:"Camarão à Romana",desc:"Empanado com queijo parmesão, molho de camarão especial.",price:179.90},
+ {id:"cam-soltinho",cat:"Camarões",name:"Camarão Soltinho",desc:"Clássico da casa, sequinho e crocante.",price:157.00},
+ {id:"cam-alhooleo",cat:"Camarões",name:"Camarão Alho e Óleo",desc:"Refogado no alho dourado e azeite.",price:157.00},
+ {id:"cam-bafo",cat:"Camarões",name:"Camarão ao Bafo",desc:"Cozido no vapor, suculento e leve.",price:157.00},
+ {id:"cam-modachef",cat:"Camarões",name:"Camarão à Moda do Chef",desc:"Empanado com coco, arroz cremoso de manjericão.",price:338.50},
+ {id:"cam-havaiano",cat:"Camarões",name:"Camarão Havaiano",desc:"Camarão frito, molho de leite de coco fresco com camarão.",price:339.50},
+ {id:"cam-praiabrava",cat:"Camarões",name:"Camarão à Praia Brava",desc:"Refogado na manteiga com bechamel sobre arroz cremoso, gratinado com mussarela.",price:312.90},
+ {id:"cam-thermidor",cat:"Camarões",name:"Camarão à Thermidor",desc:"Grelhado e gratinado com molho branco, mostarda, champignon e parmesão.",price:312.90},
+ {id:"cam-punta",cat:"Camarões",name:"Camarão à Punta del Este",desc:"Gratinado com molho branco, champignon, presunto e azeitona.",price:312.90},
+ {id:"cam-laranjeiras",cat:"Camarões",name:"Camarão à Laranjeiras",desc:"Gratinado com molho rosado, palmito e maçã.",price:312.90},
+ {id:"cam-catupiry",cat:"Camarões",name:"Camarão à Catupiry",desc:"Grelhado e gratinado com molho branco e catupiry.",price:312.90},
+ {id:"cam-strogonoff",cat:"Camarões",name:"Strogonoff de Camarão",desc:"Acompanha arroz branco, arroz c/ alho e batata palha.",price:312.90},
+ {id:"moda-casa",cat:"Camarões",name:"Camarão à Moda da Casa",desc:"8 camarões à milanesa, 2 filés de linguado, arroz branco, à grega, batata frita, banana à milanesa, molho de camarão e pirão.",price:372.90},
+ {id:"sequencia",cat:"Camarões",name:"Sequência de Camarão",desc:"Bolinhos, soltinho, alho e óleo, ao bafo, espetinhos à grega e grelhados, filés de linguado à milanesa.",price:404.90},
+ {id:"px-grelhado",cat:"Peixes",name:"Peixe Grelhado",desc:"Acompanha arroz branco, arroz alho e óleo, pirão de peixe e batata sauté.",price:180.50,variants:{Anchova:180.50,Linguado:280.50,Salmão:280.50,Côngrio:299.00}},
+ {id:"px-modaporto",cat:"Peixes",name:"Peixe à Moda do Porto",desc:"Grelhado com legumes e batata portuguesa na manteiga.",price:286.00,variants:{Linguado:286.00,Salmão:286.00,Côngrio:301.90}},
+ {id:"px-provencal",cat:"Peixes",name:"Peixe à Provençal",desc:"Grelhado no azeite de oliva com frutos do mar.",price:332.90,variants:{Linguado:332.90,Salmão:332.90,Côngrio:338.50}},
+ {id:"px-molhocam",cat:"Peixes",name:"Peixe ao Molho de Camarão",desc:"Grelhado com molho de camarão.",price:288.90,variants:{Linguado:288.90,Salmão:288.90,Côngrio:301.90}},
+ {id:"px-maracuja",cat:"Peixes",name:"Peixe ao Molho de Maracujá",desc:"Salmão grelhado com molho cítrico de maracujá.",price:288.50,variants:{Salmão:288.50}},
+ {id:"px-belle",cat:"Peixes",name:"Peixe Belle Meunière",desc:"Grelhado com alcaparras, champignon e camarão.",price:288.90,variants:{Linguado:288.90,Salmão:288.90,Côngrio:301.90}},
+ {id:"px-milanesa",cat:"Peixes",name:"Peixe à Milanesa",desc:"Peixe empanado, batata frita e pirão de peixe.",price:275.90,variants:{Linguado:275.90}},
+ {id:"fmar-amores",cat:"Frutos do Mar",name:"Mar de Amores",desc:"Filé de garoupa, lombo de salmão à belle meunière, camarões rosa à penne, lulas grelhadas, banana à milanesa e guarnições da casa.",price:656.90,badge:"new"},
+ {id:"fmar-caldeirada",cat:"Frutos do Mar",name:"Caldeirada de Frutos do Mar",desc:"Peixe, camarão, lula, polvo e mariscos no caldo da casa.",price:310.00},
+ {id:"fmar-paella",cat:"Frutos do Mar",name:"Paella de Frutos do Mar",desc:"Lula, polvo, cubos de peixe, camarões, mariscos e açafrão.",price:315.90},
+ {id:"fmar-lagosta",cat:"Frutos do Mar",name:"Lagosta à Thermidor",desc:"Grelhada e gratinada com molho de mostarda.",price:426.90},
+ {id:"moqueca",cat:"Frutos do Mar",name:"Moqueca de Peixe c/ Camarão",desc:"Ensopado no leite de coco e azeite de dendê, com pirão sauté e farofa.",price:311.50},
+ {id:"pet-bacalhau",cat:"Petiscos",name:"Bolinho de Bacalhau (6 un.)",desc:"Crocante por fora, macio por dentro.",price:53.90},
+ {id:"pet-camarao",cat:"Petiscos",name:"Bolinho de Camarão",desc:"Unidade da casa, recheado e dourado.",price:26.50},
+ {id:"pet-lagosta",cat:"Petiscos",name:"Bolinho de Lagosta",desc:"Unidade especial com lagosta fresca.",price:31.90},
+ {id:"pet-siri",cat:"Petiscos",name:"Bolinho de Siri",desc:"Unidade clássica caiçara.",price:26.50},
+ {id:"pet-isca",cat:"Petiscos",name:"Isca de Mignon",desc:"Tiras de filé mignon empanadas.",price:153.90},
+ {id:"pet-iscapicanha",cat:"Petiscos",name:"Isca de Picanha",desc:"Tiras de picanha empanadas e suculentas.",price:153.90},
+ {id:"pet-iscapeixe",cat:"Petiscos",name:"Isca de Peixe",desc:"Cubos de peixe branco empanados.",price:134.00},
+ {id:"pet-misto",cat:"Petiscos",name:"Misto do Porto",desc:"Camarão soltinho, isca de peixe, lula à milanesa e fritas.",price:237.00},
+ {id:"pet-batata",cat:"Petiscos",name:"Batata Frita",desc:"Porção crocante da casa.",price:46.90},
+ {id:"sal-mista",cat:"Saladas",name:"Salada Mista",desc:"Folhas frescas da estação.",price:81.50},
+ {id:"sal-camarao",cat:"Saladas",name:"Maionese de Camarão",desc:"Clássica e cremosa, com camarões.",price:165.00},
+ {id:"ave-brasileira",cat:"Aves & Carnes",name:"Frango à Brasileira",desc:"Arroz branco, arroz alho e óleo e batata frita.",price:136.50},
+ {id:"ave-milanesa",cat:"Aves & Carnes",name:"Frango à Milanesa",desc:"Empanado crocante, guarnições da casa.",price:136.50},
+ {id:"car-mignon",cat:"Aves & Carnes",name:"Mignon ao Molho de Champignon",desc:"Acompanha arroz branco, arroz com alho e batata frita.",price:224.90},
+ {id:"car-picanha",cat:"Aves & Carnes",name:"Picanha Grelhada",desc:"No ponto, com fritas da casa.",price:224.90},
+ {id:"sob-petit",cat:"Sobremesas",name:"Petit Gateau",desc:"Casca crocante, centro cremoso de chocolate quente.",price:45.90},
+ {id:"beb-agua",cat:"Bebidas",name:"Água Mineral 500ml",desc:"Com ou sem gás.",price:9.50},
+ {id:"beb-refri",cat:"Bebidas",name:"Refrigerante Lata 350ml",desc:"Consulte sabores e marcas.",price:10.50},
+ {id:"beb-suco",cat:"Bebidas",name:"Suco de Uva Integral 500ml",desc:"Integral, sem adição de açúcar.",price:19.90},
+ {id:"beb-caipira",cat:"Bebidas",name:"Caipirinha (Kiwi, Limão, Maracujá, Abacaxi ou Morango)",desc:"Vodka, bacardi, steinhaeger, pinga ou vinho.",price:36.50,variants:{Vodka:36.50,Bacardi:36.50,Steinhaeger:36.50,Pinga:30.50,Vinho:30.50,Absolut:54.50}},
+ {id:"beb-caipesp",cat:"Bebidas",name:"Caipira Especial da Casa",desc:"Uva c/ manjericão, limão siciliano c/ gengibre ou caju c/ limão.",price:51.50},
+ {id:"beb-cerveja600",cat:"Bebidas",name:"Cerveja Long Neck",desc:"Corona, Stella Artois, Spaten, Brahma 0,0%, Malzbier ou Heineken.",price:18.00},
+ {id:"beb-aperol",cat:"Bebidas",name:"Aperol Spritz",desc:"O clássico italiano, geladíssimo.",price:54.90},
+];
+
+const CATS = ["Todos","Camarões","Peixes","Frutos do Mar","Petiscos","Saladas","Aves & Carnes","Sobremesas","Bebidas"];
+const BRL = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+let cart = JSON.parse(localStorage.getItem("pc_cart")||"[]");
+let mode = "Entrega";
+
+/* ================= RENDER MENU ================= */
+const catsEl = document.getElementById("cats"), grid = document.getElementById("menuGrid");
+let activeCat = "Todos", query = "";
+
+CATS.forEach(c=>{
+  const b=document.createElement("button");
+  b.className="cat-pill"+(c==="Todos"?" active":""); b.textContent=c;
+  b.onclick=()=>{activeCat=c;document.querySelectorAll(".cat-pill").forEach(p=>p.classList.remove("active"));b.classList.add("active");renderMenu();};
+  catsEl.appendChild(b);
+});
+document.getElementById("searchInput").addEventListener("input",e=>{query=e.target.value.toLowerCase();renderMenu();});
+
+function renderMenu(){
+  grid.innerHTML="";
+  const list = MENU.filter(i=>(activeCat==="Todos"||i.cat===activeCat)&&(i.name+" "+i.desc).toLowerCase().includes(query));
+  if(!list.length){grid.innerHTML='<div class="menu-note" style="grid-column:1/-1">Nenhum item encontrado 🔍</div>';return;}
+  list.forEach((item,idx)=>{
+    const d=document.createElement("article"); d.className="dish";
+    const badge = item.badge==="new" ? '<span class="d-badge new">Novidade</span>' : "";
+    d.innerHTML=`
+      <div class="d-main">
+        <div class="d-name">${item.name} ${badge}</div>
+        <div class="d-desc">${item.desc}</div>
+      </div>
+      <div class="d-side">
+        <div class="d-price">${BRL(item.price)}</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="qty">
+            <button onclick="chgQty('${item.id}',-1)">−</button>
+            <span class="qv" id="qv-${item.id}">${getQty(item.id)}</span>
+            <button onclick="chgQty('${item.id}',1)">+</button>
+          </div>
+        </div>
+        <button class="add-mini" onclick="chgQty('${item.id}',1)">Adicionar</button>
+      </div>`;
+    grid.appendChild(d);
+    setTimeout(()=>d.classList.add("in"), 40*idx);
+  });
+}
+renderMenu();
+
+/* ================= CART ================= */
+function getQty(id){const it=cart.find(c=>c.id===id);return it?it.qty:0;}
+function saveCart(){localStorage.setItem("pc_cart",JSON.stringify(cart));updateUI();}
+function chgQty(id,delta){
+  const item=MENU.find(m=>m.id===id); if(!item)return;
+  let it=cart.find(c=>c.id===id);
+  if(!it&&delta>0){it={id,qty:0,name:item.name,price:item.price};cart.push(it);}
+  if(it){it.qty+=delta; if(it.qty<=0)cart=cart.filter(c=>c.id!==id); if(it)it.qty=Math.max(0,it.qty);}
+  saveCart(); renderMenu();
+  if(delta>0&&it&&it.qty>0){const q=document.getElementById("qv-"+id);if(q){q.textContent=it.qty;}}
+}
+function updateUI(){
+  const count=cart.reduce((s,c)=>s+c.qty,0);
+  const total=cart.reduce((s,c)=>s+c.qty*c.price,0);
+  const cc=document.getElementById("cartCount");
+  cc.style.display=count?"flex":"none"; cc.textContent=count;
+  document.getElementById("cartTotal").textContent=BRL(total);
+  const box=document.getElementById("cartItems");
+  if(!cart.length){box.innerHTML='<div class="cd-empty">Seu pedido está vazio 🦐<br>Explore o cardápio e escolha seus favoritos.</div>';return;}
+  box.innerHTML=cart.map(c=>`
+    <div class="cd-item">
+      <div class="ci-info"><b>${c.name}</b><span>${BRL(c.price)} un.</span></div>
+      <div class="ci-qty">
+        <button onclick="chgQty('${c.id}',-1)">−</button><span class="qv">${c.qty}</span><button onclick="chgQty('${c.id}',1)">+</button>
+      </div>
+      <button class="ci-del" onclick="chgQty('${c.id}',-999)">🗑</button>
+    </div>`).join("");
+}
+document.querySelectorAll(".mode-btn").forEach(b=>b.onclick=()=>{
+  mode=b.dataset.mode;
+  document.querySelectorAll(".mode-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+});
+function openCart(){document.getElementById("cartDrawer").classList.add("open");document.getElementById("drawerOverlay").classList.add("open");}
+function closeCart(){document.getElementById("cartDrawer").classList.remove("open");document.getElementById("drawerOverlay").classList.remove("open");}
+
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{chgQty(b.dataset.add,1);toast("Adicionado ao pedido ✓");});
+
+let toastT;
+function toast(msg){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+/* ================= CHECKOUT / WHATSAPP ================= */
+function openCheckout(){
+  if(!cart.length){toast("Adicione itens ao pedido primeiro 🍤");return;}
+  closeCart();
+  const total=cart.reduce((s,c)=>s+c.qty*c.price,0);
+  document.getElementById("ckSummary").innerHTML =
+    cart.map(c=>`${c.qty}× <b>${c.name}</b> — ${BRL(c.qty*c.price)}`).join("<br>") +
+    `<br><br><b>Total: ${BRL(total)}</b> · ${mode}`;
+  document.getElementById("ckModal").classList.add("open");
+}
+function closeCheckout(){document.getElementById("ckModal").classList.remove("open");}
+function sendWhats(){
+  const name=document.getElementById("ckName").value.trim()||"Cliente";
+  const addr=document.getElementById("ckAddr").value.trim();
+  const obs=document.getElementById("ckObs").value.trim();
+  const total=cart.reduce((s,c)=>s+c.qty*c.price,0);
+  let msg=`Olá, Porto Camarões! 🦐\n*Pedido de ${name}*\n*${mode}*\n\n`;
+  cart.forEach(c=>msg+=`▪ ${c.qty}× ${c.name} — ${BRL(c.qty*c.price)}\n`);
+  msg+=`\n*Total: ${BRL(total)}*`;
+  if(mode==="Entrega"&&addr)msg+=`\n📍 ${addr}`;
+  if(obs)msg+=`\n📝 ${obs}`;
+  window.open(`https://wa.me/554732640399?text=${encodeURIComponent(msg)}`,"_blank");
+  toast("Pedido enviado! Bom apetite 🌊");
+  cart=[];saveCart();closeCheckout();renderMenu();
+}
+
+/* ================= NAV / MOBILE ================= */
+const nav=document.getElementById("nav");
+addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
+const burger=document.getElementById("burger"),navLinks=document.getElementById("navLinks");
+burger.onclick=()=>navLinks.classList.toggle("open");
+navLinks.querySelectorAll("a").forEach(a=>a.onclick=()=>navLinks.classList.remove("open"));
+
+/* ================= CURSOR ================= */
+const dot=document.querySelector(".cursor-dot"),ring=document.querySelector(".cursor-ring");
+let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
+(function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(loop);})();
+document.addEventListener("mouseover",e=>{if(e.target.closest("a,button,input,textarea"))ring.classList.add("grow");});
+document.addEventListener("mouseout",e=>{if(e.target.closest("a,button,input,textarea"))ring.classList.remove("grow");});
+
+/* ================= GSAP ANIMATIONS ================= */
+gsap.registerPlugin(ScrollTrigger);
+/* preloader */
+const plLogo=document.querySelector("#preloader .pl-logo"),plBar=document.querySelector("#preloader .pl-bar i"),plPct=document.querySelector("#preloader .pl-pct");
+const load={v:0};
+gsap.to(load,{v:100,duration:1.8,ease:"power2.inOut",onUpdate(){plPct.textContent=Math.round(load.v)+"%";plBar.style.transform=`scaleX(${load.v/100})`;},
+  onComplete(){
+    gsap.timeline()
+      .to(plLogo,{opacity:1,y:0,duration:.6,ease:"power3.out"})
+      .to("#preloader",{yPercent:-100,duration:.9,ease:"power4.inOut",delay:.5})
+      .set("#preloader",{display:"none"})
+      .add(()=>{document.querySelectorAll("header .reveal").forEach((el,i)=>gsap.to(el,{opacity:1,y:0,duration:1,ease:"power3.out",delay:i*.12}));},"-=0.5");
+  }});
+gsap.set(plLogo,{y:30});
+
+/* parallax hero */
+gsap.to("#heroBg",{yPercent:18,ease:"none",scrollTrigger:{trigger:"header",start:"top top",end:"bottom top",scrub:true}});
+
+/* generic reveals */
+document.querySelectorAll(".reveal").forEach(el=>{
+  if(el.closest("header"))return;
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:"power3.out",scrollTrigger:{trigger:el,start:"top 88%"}});
+});
+
+/* counters */
+document.querySelectorAll("[data-count]").forEach(el=>{
+  const end=parseFloat(el.dataset.count),dec=parseInt(el.dataset.dec||0);
+  ScrollTrigger.create({trigger:el,start:"top 90%",once:true,onEnter(){
+    gsap.to({v:0},{v:end,duration:2,ease:"power2.out",onUpdate:function(){el.textContent=this.targets()[0].v.toFixed(dec).replace(".",",");}});
+  }});
+});
+
+/* marquee duplicate */
+const mt=document.getElementById("marqueeTrack");mt.innerHTML+=mt.innerHTML;
+
+updateUI();
+</script>
+</body>
+</html>
