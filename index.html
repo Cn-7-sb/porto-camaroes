@@ -523,7 +523,7 @@ footer{border-top:1px solid rgba(255,255,255,.07);padding:70px clamp(20px,6vw,90
         <div><b>Todos</b><span>Os dias</span></div>
       </div>
       <div class="reveal" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px">
-        <a class="btn btn-gold" href="https://wa.me/554732640399?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20uma%20reserva%20no%20Porto%20Camar%C3%B5es." target="_blank" rel="noopener">Reservar mesa</a>
+        <a class="btn btn-gold" href="https://wa.me/554733116181?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20uma%20reserva%20no%20Porto%20Camar%C3%B5es." target="_blank" rel="noopener">Reservar mesa</a>
         <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=Porto+Camar%C3%B5es+Av.+Atl%C3%A2ntica+3410+Balne%C3%A1rio+Cambori%C3%BA" target="_blank" rel="noopener">Como chegar</a>
       </div>
     </div>
@@ -760,7 +760,7 @@ function sendWhats(){
   msg+=`\n*Total: ${BRL(total)}*`;
   if(mode==="Entrega"&&addr)msg+=`\n📍 ${addr}`;
   if(obs)msg+=`\n📝 ${obs}`;
-  window.open(`https://wa.me/554732640399?text=${encodeURIComponent(msg)}`,"_blank");
+  window.open(`https://wa.me/554733116181?text=${encodeURIComponent(msg)}`,"_blank");
   toast("Pedido enviado! Bom apetite 🌊");
   cart=[];saveCart();closeCheckout();renderMenu();
 }
