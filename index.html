@@ -755,7 +755,10 @@ function sendWhats(){
 
 /* ================= NAV / MOBILE ================= */
 const nav=document.getElementById("nav");
-addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
+addEventListener("scroll",()=>{
+  nav.classList.toggle("scrolled",scrollY>40);
+  navLinks.classList.remove("open");
+});
 const burger=document.getElementById("burger"),navLinks=document.getElementById("navLinks");
 burger.onclick=()=>navLinks.classList.toggle("open");
 navLinks.querySelectorAll("a").forEach(a=>a.onclick=()=>navLinks.classList.remove("open"));
